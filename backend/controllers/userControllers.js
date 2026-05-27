@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { genToken } from "../utilities/genToken.js";
 import { sendWelcomeEmail } from "../emails/emailHandler.js";
 // Model Methods
+// ### User MODEL
+import User from "../models/userSchema.js";
 import {
   addNewRecord,
   getSingleRecord,
@@ -39,12 +41,14 @@ export const getusers = async (req, res) => {
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
   // Check if the Email Already taken or registered
-  const isExisting = await getSingleRecord({ email });
+  // const isExisting = await getSingleRecord({ email }); //MONGO-DRIVE
 
-  if (isExisting) {
+  const isRegisterdBefore = await User.findOne({ email });
+
+  if (isRegisterdBefore) {
     return res.status(400).json({
       status: "ERROR",
-      message: `can't use ${email} more than one time`,
+      message: `${email} is already registered`,
     });
   }
 
@@ -89,7 +93,7 @@ export const register = async (req, res) => {
       isDeleted: false,
     };
 
-    const payload = await addNewRecord(newUser);
+    const payload = await User.create(newUser);
 
     if (payload) {
       await sendWelcomeEmail(newUser.email, newUser.name);

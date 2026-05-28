@@ -20,7 +20,6 @@ app.use(mock);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
-
 app.use("/api/v1/users", userRouter);
 app.use(errorHandling);
 

@@ -8,8 +8,6 @@ const wechat_link =
 export const resend = new Resend(process.env.VITE_RESEND_API_KEY);
 
 export const sendWelcomeEmail = async (email, name) => {
-  console.log("WECHAT ? ", process.env.VITE_WECHAT_URL);
-
   const { data, error } = await resend.emails.send({
     from: "onboarding@resend.dev",
     to: email,
@@ -18,7 +16,9 @@ export const sendWelcomeEmail = async (email, name) => {
   });
 
   if (error) {
-    throw new Error(`Error While Sending Email : ${error.message}`);
+    // Don't braeak the application for that
+    // throw new Error(`Error While Sending Email : ${error.message}`);
+    console.warn(`Error While Sending Email ${error.message}`);
   }
 
   console.log("Our family raised one ^-^", data);

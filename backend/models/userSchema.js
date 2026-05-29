@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const UserSchema = mongoose.Schema(
   {
     name: {
@@ -20,6 +19,16 @@ const UserSchema = mongoose.Schema(
       type: String,
       require: true,
       minlength: 3,
+    },
+    profile_pic: {
+      type: String,
+      require: true,
+      default: "",
+    },
+    isDeleted: {
+      type: Boolean,
+      require: true,
+      default: false,
     },
   },
   { timestamps: true },

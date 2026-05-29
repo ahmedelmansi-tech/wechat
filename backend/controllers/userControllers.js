@@ -3,39 +3,21 @@ import Joi from "joi";
 import bcrypt from "bcrypt";
 import { genToken } from "../utilities/genToken.js";
 import { sendWelcomeEmail } from "../emails/emailHandler.js";
+import cloudinary from "../lib/cloudinary.js";
+
+//*******************************************/
 // Model Methods
 // ### User MODEL
 import User from "../models/userSchema.js";
-import {
-  addNewRecord,
-  getSingleRecord,
-  deleteSingleRecord,
-  restoreRecord,
-  editeRecord,
-  getAllUsers,
-  userImage,
-} from "../models/userModel.js";
-
-// Upload
-export const imageUpload = async (req, res) => {
-  const user_image = req.body.image;
-  console.log("REQUEST is ", userImage);
-  await userImage({ image: user_image });
-  console.log(req.file);
-
-  res.status(200).json({
-    message: `file ${req.file.originalname} uploaded`,
-  });
-};
-
-// @ get All users
-export const getusers = async (req, res) => {
-  const notDeletedOnly = await getAllUsers();
-  res.status(200).json({
-    message: "GET In USERS ",
-    list: notDeletedOnly,
-  });
-};
+// import {
+//   addNewRecord,
+//   getSingleRecord,
+//   deleteSingleRecord,
+//   restoreRecord,
+//   editeRecord,
+//   getAllUsers,
+//   userImage,
+// } from "../models/userModel.js";
 
 // @ Add new User - /register
 export const register = async (req, res) => {
@@ -67,6 +49,7 @@ export const register = async (req, res) => {
       .pattern(new RegExp(`^[a-zA-Z0-9]{8,25}$`))
       .required(),
     confirm_password: Joi.ref("password"),
+    isDeleted: Joi.boolean(),
   });
 
   // JUST FYI
@@ -85,28 +68,103 @@ export const register = async (req, res) => {
     const hashedPs = bcrypt.hashSync(password, salt);
 
     // The new Record that will be sent to the database
-    const newUser = {
+    const payload = {
       name,
       email,
       password: hashedPs,
-      token: await genToken(email),
-      isDeleted: false,
     };
 
-    const payload = await User.create(newUser);
-
-    if (payload) {
+    const newUser = await User.create(payload);
+    const token = await genToken(newUser._id);
+    if (newUser) {
       await sendWelcomeEmail(newUser.email, newUser.name);
     }
 
     res.status(201).json({
       message: "<POST - METHOD > In USERS",
-      payload: newUser,
+      payload,
+      token,
     });
   }
 };
 
-// // register
+// @ Sign in - /login
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  // case : User did't input the Creditential
+  if (email === "" || password === "") {
+    return res.status(400).json({
+      status: "error",
+      message: "fill in all the feilds",
+    });
+  }
+  // const logInUser = await getSingleRecord({ email });
+
+  const logInUser = await User.findOne({ email });
+
+  // Case : User Didn't Register
+  if (!logInUser) {
+    return res.status(400).json({
+      message: `${email} is not registered`,
+      status: "error",
+    });
+  }
+
+  // Case : User Founded and validates the Password
+  if (await bcrypt.compare(password, logInUser.password)) {
+    return res.status(200).json({
+      message: `welcome ${logInUser.name}`,
+      data: logInUser,
+    });
+  } else {
+    return res.status(400).json({
+      status: "Error",
+      message: "invalid credientials",
+    });
+  }
+};
+
+// @ update profile pic /update-profile
+export const updateProfile = async (req, res) => {
+  // Handling the Profile Pic In the Cloudinary Side
+
+  // console.log(req.file); //,,
+  //    {
+  //   fieldname: 'profile_pic',
+  //   originalname: 'quote-icon.png',
+  //   encoding: '7bit',
+  //   mimetype: 'image/png',
+  //   destination: 'uploads',
+  //   filename: 'quote-icon-7a952fcb-6e74-4de4-806a-52700a28be56.png',
+  //   path: 'uploads\\quote-icon-7a952fcb-6e74-4de4-806a-52700a28be56.png
+  //   size: 1180
+  // }
+
+  console.log("iam the authorized User", req.authUser);
+
+  const { secure_url } = await cloudinary.uploader.upload(req.file.path);
+  // console.log(result);
+
+  if (secure_url) {
+    await User.findByIdAndUpdate(
+      { _id: req.authUser._id },
+      {
+        profile_pic: secure_url,
+      },
+    );
+  } else {
+    throw new Error("Failed to upload resources .. ");
+  }
+
+  res.status(200).json({
+    message: "Profile updated",
+    loggedUser: req.authUser,
+  });
+};
+
+//---------------------------------------------------------------------------------------------------------------------------------//
+
 // export const register = async (req, res) => {
 //   const { email, password } = req.body;
 //   // Check If it is a User Or new User
@@ -133,41 +191,41 @@ export const register = async (req, res) => {
 // };
 
 // Login    -  /login
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+// export const login = async (req, res) => {
+//   const { email, password } = req.body;
 
-  // case : User did't input the Creditential
+//   // case : User did't input the Creditential
 
-  if (email === "" || password === "") {
-    return res.status(400).json({
-      status: "error",
-      message: "fill in all the feilds",
-    });
-  }
+//   if (email === "" || password === "") {
+//     return res.status(400).json({
+//       status: "error",
+//       message: "fill in all the feilds",
+//     });
+//   }
 
-  const logInUser = await getSingleRecord({ email });
+//   const logInUser = await getSingleRecord({ email });
 
-  // Case : User Didn't Register
-  if (!logInUser) {
-    return res.status(400).json({
-      message: `${email} is not registered`,
-      status: "error",
-    });
-  }
+//   // Case : User Didn't Register
+//   if (!logInUser) {
+//     return res.status(400).json({
+//       message: `${email} is not registered`,
+//       status: "error",
+//     });
+//   }
 
-  // Case : User Founded and validates the Password
-  if (await bcrypt.compare(password, logInUser.password)) {
-    return res.status(200).json({
-      message: `welcome ${logInUser.name}`,
-      data: logInUser,
-    });
-  } else {
-    return res.status(400).json({
-      status: "Error",
-      message: "Password is invalid",
-    });
-  }
-};
+//   // Case : User Founded and validates the Password
+//   if (await bcrypt.compare(password, logInUser.password)) {
+//     return res.status(200).json({
+//       message: `welcome ${logInUser.name}`,
+//       data: logInUser,
+//     });
+//   } else {
+//     return res.status(400).json({
+//       status: "Error",
+//       message: "Password is invalid",
+//     });
+//   }
+// };
 
 export const editeUser = async (req, res) => {
   const userEditeId = req.params.id;
@@ -220,5 +278,26 @@ export const deleteUser = async (req, res) => {
   res.status(200).json({
     message: `DELETE In USERS ${userId}`,
     data: delUser,
+  });
+};
+
+// Upload
+export const imageUpload = async (req, res) => {
+  const user_image = req.body.image;
+  console.log("REQUEST is ", userImage);
+  await userImage({ image: user_image });
+  console.log(req.file);
+
+  res.status(200).json({
+    message: `file ${req.file.originalname} uploaded`,
+  });
+};
+
+// @ get All users
+export const getusers = async (req, res) => {
+  const notDeletedOnly = await getAllUsers();
+  res.status(200).json({
+    message: "GET In USERS ",
+    list: notDeletedOnly,
   });
 };

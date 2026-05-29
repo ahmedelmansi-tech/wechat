@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import User from "../models/userSchema.js";
 export const authorization = async (req, res, next) => {
   // process.env.VITE_JWT_SECRET
   const auth = req.headers.authorization;
@@ -10,7 +11,7 @@ export const authorization = async (req, res, next) => {
     });
   }
   const authToken = auth.split(" ")[1];
-  const decodedToken = await jwt.decode(authToken, process.env.VITE_JWT_SECRET);
+  const decodedToken = await jwt.verify(authToken, process.env.VITE_JWT_SECRET);
   console.log("DECOED TOKEN", decodedToken);
 
   if (!decodedToken) {
@@ -20,5 +21,8 @@ export const authorization = async (req, res, next) => {
       status: "error",
     });
   }
+
+  if (decodedToken)
+    req.authUser = await User.findById(decodedToken._id).select("-password");
   next();
 };

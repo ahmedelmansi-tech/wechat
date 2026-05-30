@@ -12,7 +12,7 @@ import { plugIn } from "./lib/dbConnect.js";
 
 // Routers
 import userRouter from "./routers/userRouter.js";
-
+import messageRouter from "./routers/messageRoutes.js";
 // Middlewares
 import { errorHandling } from "./middlewares/errorMiddleware.js";
 import { mock } from "./middlewares/mockup.js";
@@ -20,7 +20,10 @@ app.use(mock);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
+
+// ROUTES URL ---
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/message", messageRouter);
 app.use(errorHandling);
 
 app.listen(PORT, (req, res) => {

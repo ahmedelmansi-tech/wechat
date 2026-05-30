@@ -34,7 +34,7 @@ export const register = async (req, res) => {
     });
   }
 
-  // SCHEMA
+  // SCHEMA JOI
   const userSchema = Joi.object({
     name: Joi.string().min(3).max(15).alphanum().required(),
     email: Joi.string()
@@ -56,10 +56,6 @@ export const register = async (req, res) => {
   // Width بتاخد peers ('name' , ['email','pas','confirm_pas','ECT....'])
   // with("name", "email", "password", "confirm_password");
   const { error, value } = userSchema.validate(req.body);
-
-  //  IMAGE VALIDATION
-  // const storage = multer.diskStorage();
-
   if (error) {
     throw new Error(error);
   } else {
@@ -76,6 +72,8 @@ export const register = async (req, res) => {
 
     const newUser = await User.create(payload);
     const token = await genToken(newUser._id);
+
+    // Sending welcome Email
     if (newUser) {
       await sendWelcomeEmail(newUser.email, newUser.name);
     }
@@ -144,7 +142,6 @@ export const updateProfile = async (req, res) => {
   console.log("iam the authorized User", req.authUser);
 
   const { secure_url } = await cloudinary.uploader.upload(req.file.path);
-  // console.log(result);
 
   if (secure_url) {
     await User.findByIdAndUpdate(

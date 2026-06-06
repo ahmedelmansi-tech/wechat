@@ -6,6 +6,7 @@ export const getAllCurrentUsers = async (req, res) => {
   const myContacts = await User.find({ _id: { $ne: currentUserId } });
   res.status(200).json({
     message: "MESSAGE ROUTE IS GOOD",
+    count: myContacts.length,
     currentUserId,
     myContacts,
   });
@@ -50,38 +51,37 @@ export const sendAmessage = async (req, res) => {
 
 export const chatPartners = async (req, res) => {
   const loggedInUserId = req.authUser._id;
+  const iam = await User.findById(loggedInUserId);
 
   // Detect whether iam the sender or the reciever
-  const result = await Message.find({
-    $or: [
-      {
-        senderId: loggedInUserId,
-      },
-      {
-        receiverId: loggedInUserId,
-      },
-    ],
+  const chatingWith = await Message.find({
+    $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
   });
+
+  // console.log("SMS", chatingWith);
 
   // so Wrapping in new Set will remove duplication and ... in new []
   const myContactsId = [
     ...new Set(
-      result.map((msg) =>
-        msg.senderId.toString() === loggedInUserId.toString()
-          ? msg.receiverId.toString()
-          : msg.senderId.toString(),
-      ),
+      chatingWith.map((message) => {
+        return message.senderId.toString() === loggedInUserId.toString()
+          ? message.receiverId.toString()
+          : message.senderId.toString();
+      }),
     ),
   ];
 
-  console.log(myContactsId);
+  console.log("My Contacts IDS is ", myContactsId);
   // fetch the contacts
 
-  const partenars = await User.find({ _id: { $in: [...myContactsId] } });
+  const talkedTo = await User.find({ _id: { $in: [...myContactsId] } }).select(
+    "-password -isDeleted -__v",
+  );
 
   res.status(200).json({
+    me: iam.name,
     message: "PARTENARS",
     myContactsId,
-    partenars,
+    talkedTo,
   });
 };

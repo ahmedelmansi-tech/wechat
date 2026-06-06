@@ -114,6 +114,7 @@ export const login = async (req, res) => {
     return res.status(200).json({
       message: `welcome ${logInUser.name}`,
       data: logInUser,
+      token: await genToken(logInUser._id),
     });
   } else {
     return res.status(400).json({
@@ -138,20 +139,20 @@ export const updateProfile = async (req, res) => {
   //   path: 'uploads\\quote-icon-7a952fcb-6e74-4de4-806a-52700a28be56.png
   //   size: 1180
   // }
+  try {
+    console.log("iam the authorized User", req.authUser);
 
-  console.log("iam the authorized User", req.authUser);
-
-  const { secure_url } = await cloudinary.uploader.upload(req.file.path);
-
-  if (secure_url) {
-    await User.findByIdAndUpdate(
-      { _id: req.authUser._id },
-      {
-        profile_pic: secure_url,
-      },
-    );
-  } else {
-    throw new Error("Failed to upload resources .. ");
+    const { secure_url } = await cloudinary.uploader.upload(req.file.path);
+    if (secure_url) {
+      await User.findByIdAndUpdate(
+        { _id: req.authUser._id },
+        {
+          profile_pic: secure_url,
+        },
+      );
+    }
+  } catch (error) {
+    throw new Error("Failed to upload resources .. ", error.message);
   }
 
   res.status(200).json({

@@ -8,12 +8,9 @@ import {
   chatPartners,
 } from "../controllers/messageController.js";
 
-router.get("/getAllCurrentUsers", authorization, getAllCurrentUsers);
-router.get("/related", authorization, chatPartners);
-router.get(
-  "/getMessagesWithOtherContact/:id",
-  authorization,
-  getMessagesWithOtherContact,
-);
-router.post("/send/:id", authorization, sendAmessage);
+router.use(authorization);
+router.get("/getAllCurrentUsers", getAllCurrentUsers);
+router.get("/related", chatPartners);
+router.get("/getMessagesWithOtherContact/:id", getMessagesWithOtherContact);
+router.post("/send/:id", sendAmessage);
 export default router;

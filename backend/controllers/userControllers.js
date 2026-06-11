@@ -1,7 +1,7 @@
 // Dependances
 import Joi from "joi";
 import bcrypt from "bcrypt";
-import { genToken } from "../utilities/genToken.js";
+import { jwtInCookies } from "../utilities/gentoken.cookies.js";
 import { sendWelcomeEmail } from "../emails/emailHandler.js";
 import cloudinary from "../lib/cloudinary.js";
 
@@ -71,7 +71,7 @@ export const register = async (req, res) => {
     };
 
     const newUser = await User.create(payload);
-    const token = await genToken(newUser._id);
+    const token = await jwtInCookies(newUser._id, res);
 
     // Sending welcome Email
     if (newUser) {
@@ -111,10 +111,11 @@ export const login = async (req, res) => {
 
   // Case : User Founded and validates the Password
   if (await bcrypt.compare(password, logInUser.password)) {
+    await jwtInCookies(logInUser._id, res);
     return res.status(200).json({
       message: `welcome ${logInUser.name}`,
       data: logInUser,
-      token: await genToken(logInUser._id),
+      // token: await jwtInCookies(logInUser._id, res),
     });
   } else {
     return res.status(400).json({

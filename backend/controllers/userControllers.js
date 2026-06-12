@@ -129,7 +129,7 @@ export const login = async (req, res) => {
 export const updateProfile = async (req, res) => {
   // Handling the Profile Pic In the Cloudinary Side
 
-  // console.log(req.file); //,,
+  console.log(req.file);
   //    {
   //   fieldname: 'profile_pic',
   //   originalname: 'quote-icon.png',
@@ -141,24 +141,24 @@ export const updateProfile = async (req, res) => {
   //   size: 1180
   // }
   try {
-    console.log("iam the authorized User", req.authUser);
+    console.log("iam the authorized User", req.authorizedUser);
 
     const { secure_url } = await cloudinary.uploader.upload(req.file.path);
     if (secure_url) {
       await User.findByIdAndUpdate(
-        { _id: req.authUser._id },
+        { _id: req.authorizedUser._id },
         {
           profile_pic: secure_url,
         },
       );
     }
   } catch (error) {
-    throw new Error("Failed to upload resources .. ", error.message);
+    throw new Error("Failed to upload resources ..", error.message);
   }
 
   res.status(200).json({
     message: "Profile updated",
-    loggedUser: req.authUser,
+    loggedUser: req.authorizedUser,
   });
 };
 
@@ -226,77 +226,77 @@ export const updateProfile = async (req, res) => {
 //   }
 // };
 
-export const editeUser = async (req, res) => {
-  const userEditeId = req.params.id;
-  const { modifiedCount, matchedCount } = await restoreRecord(userEditeId);
+// export const editeUser = async (req, res) => {
+//   const userEditeId = req.params.id;
+//   const { modifiedCount, matchedCount } = await restoreRecord(userEditeId);
 
-  if (matchedCount === 1 && modifiedCount === 0) {
-    return res.status(400).json({
-      status: "ERROR",
-      code: "400",
-      message: `#${userEditeId} may be restored before`,
-    });
-  } else if (matchedCount === 0) {
-    return res.status(400).json({
-      status: "ERROR",
-      code: "400",
-      message: `#${userEditeId} not found`,
-    });
-  }
+//   if (matchedCount === 1 && modifiedCount === 0) {
+//     return res.status(400).json({
+//       status: "ERROR",
+//       code: "400",
+//       message: `#${userEditeId} may be restored before`,
+//     });
+//   } else if (matchedCount === 0) {
+//     return res.status(400).json({
+//       status: "ERROR",
+//       code: "400",
+//       message: `#${userEditeId} not found`,
+//     });
+//   }
 
-  return res.status(200).json({
-    message: `#${userEditeId} restored Successfuly`,
-    id: userEditeId,
-  });
-};
+//   return res.status(200).json({
+//     message: `#${userEditeId} restored Successfuly`,
+//     id: userEditeId,
+//   });
+// };
 
 // edite user data
-export const editeUserData = async (req, res) => {
-  let newUserData = req.body;
-  newUserData.id = req.params.id;
+// export const editeUserData = async (req, res) => {
+//   let newUserData = req.body;
+//   newUserData.id = req.params.id;
 
-  const isFound = await getSingleRecord({ email: newUserData.email });
-  console.log("IS FOUNDED ", isFound);
-  console.log(newUserData);
-  if (isFound !== null && isFound._id.toString() !== newUserData.id) {
-    return res.status(400).json({
-      message: "SAMA MASAS",
-    });
-  }
-  const result = await editeRecord(newUserData);
-  res.status(200).json({
-    message: "Edite",
-    result,
-  });
-};
+//   const isFound = await getSingleRecord({ email: newUserData.email });
+//   console.log("IS FOUNDED ", isFound);
+//   console.log(newUserData);
+//   if (isFound !== null && isFound._id.toString() !== newUserData.id) {
+//     return res.status(400).json({
+//       message: "SAMA MASAS",
+//     });
+//   }
+//   const result = await editeRecord(newUserData);
+//   res.status(200).json({
+//     message: "Edite",
+//     result,
+//   });
+// };
 
-export const deleteUser = async (req, res) => {
-  const userId = req.params.id;
+// export const deleteUser = async (req, res) => {
+//   const userId = req.params.id;
 
-  const delUser = await deleteSingleRecord(userId);
-  res.status(200).json({
-    message: `DELETE In USERS ${userId}`,
-    data: delUser,
-  });
-};
+//   const delUser = await deleteSingleRecord(userId);
+//   res.status(200).json({
+//     message: `DELETE In USERS ${userId}`,
+//     data: delUser,
+//   });
+// };
 
 // Upload
-export const imageUpload = async (req, res) => {
-  const user_image = req.body.image;
-  console.log("REQUEST is ", userImage);
-  await userImage({ image: user_image });
-  console.log(req.file);
+// export const imageUpload = async (req, res) => {
+//   const user_image = req.body.image;
+//   console.log("REQUEST is ", userImage);
+//   await userImage({ image: user_image });
+//   console.log(req.file);
 
-  res.status(200).json({
-    message: `file ${req.file.originalname} uploaded`,
-  });
-};
+//   res.status(200).json({
+//     message: `file ${req.file.originalname} uploaded`,
+//   });
+// };
 
 // @ get All users
-export const getusers = async (req, res) => {
-  const notDeletedOnly = await getAllUsers();
-  res.status(200).json({
-    message: "GET In USERS ",
-    list: notDeletedOnly,
-  });
-};
+// export const getusers = async (req, res) => {
+//   const notDeletedOnly = await getAllUsers();
+//   res.status(200).json({
+//     message: "GET In USERS ",
+//     list: notDeletedOnly,
+//   });
+// };

@@ -3,7 +3,7 @@ const PORT = process.env.PORT || 5500;
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import multer from "multer";
+// import multer from "multer";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 // import cors from "cors";
@@ -25,9 +25,10 @@ import { doYouHaveCookie } from "./middlewares/haveCookie.js";
 import { mock } from "./middlewares/mockup.js";
 
 app.use(mock);
+app.use(cookieParser());
+app.use(doYouHaveCookie);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(morgan("dev"));
 // ATTENTION FRONTEND PORT
 // app.use(
@@ -40,19 +41,18 @@ app.use(morgan("dev"));
 // ROUTES URL ---
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/message", messageRouter);
-app.use(doYouHaveCookie);
 app.use(errorHandling);
 
 // TRY
-const data = multer({ dest: "data/" });
-app.post("/try", data.single("cv"), (req, res) => {
-  console.log("Iam Working All good ", req.body);
+// const data = multer({ dest: "data/" });
+// app.post("/try", data.single("cv"), (req, res) => {
+//   console.log("Iam Working All good ", req.body);
 
-  res.json({
-    a: req.file,
-    b: req.body,
-  });
-});
+//   res.json({
+//     a: req.file,
+//     b: req.body,
+//   });
+// });
 
 // console.log(path.resolve("controllers"));
 
@@ -63,7 +63,7 @@ app.post("/try", data.single("cv"), (req, res) => {
 // );
 // log("__DIRNAME".bold.bgYellow, path.resolve());
 // log("__FILENAME".bold.bgYellow, path.dirname(path.resolve()));
-// log("process.cwd()".bold.bgGreen, process.cwd());
+log("process.cwd()".bold.bgGreen, process.cwd());
 
 // PRODUCTION MOOOD
 if (process.env.ENVIROMENT === "production") {
@@ -74,14 +74,6 @@ if (process.env.ENVIROMENT === "production") {
     app.sendFile(path.join(path.resolve(), "../dist/index.html"));
   });
 }
-
-app.get("/help", async (req, res) => {
-  const name = " req.body.needHelp";
-  // await jwtInCookies(id, res);
-  res.status(200).json({
-    name,
-  });
-});
 
 app.listen(PORT, (req, res) => {
   plugIn();

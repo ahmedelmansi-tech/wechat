@@ -1,4 +1,4 @@
 export const doYouHaveCookie = (req, res, next) => {
-  console.log("THE COOKIE IS".bgGreen, req.cookies);
+  console.log("THE COOKIE IS".bgYellow, req.cookies);
   next();
 };

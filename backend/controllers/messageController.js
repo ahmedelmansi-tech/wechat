@@ -2,18 +2,17 @@ import Message from "../models/MessageSchema.js";
 import User from "../models/userSchema.js";
 
 export const getAllCurrentUsers = async (req, res) => {
-  const currentUserId = req.authUser._id;
-  const myContacts = await User.find({ _id: { $ne: currentUserId } });
+  const meId = req.authorizedUser._id;
+  const contacts = await User.find({ _id: { $ne: meId } });
   res.status(200).json({
-    message: "MESSAGE ROUTE IS GOOD",
-    count: myContacts.length,
-    currentUserId,
-    myContacts,
+    message: "all contacts",
+    count: contacts.length,
+    data: contacts,
   });
 };
 
 export const getMessagesWithOtherContact = async (req, res) => {
-  const currentLoggedUserId = req.authUser._id;
+  const currentLoggedUserId = req.authorizedUser._id;
   const recieverUserId = req.params.id;
 
   const messagesBetweenUs = await Message.find({
@@ -32,7 +31,7 @@ export const getMessagesWithOtherContact = async (req, res) => {
 
 export const sendAmessage = async (req, res) => {
   const messagePayload = req.body;
-  const from = req.authUser._id;
+  const from = req.authorizedUser._id;
   const to = req.params.id;
 
   const newMessage = {
@@ -50,7 +49,7 @@ export const sendAmessage = async (req, res) => {
 };
 
 export const chatPartners = async (req, res) => {
-  const loggedInUserId = req.authUser._id;
+  const loggedInUserId = req.authorizedUser._id;
   const iam = await User.findById(loggedInUserId);
 
   // Detect whether iam the sender or the reciever

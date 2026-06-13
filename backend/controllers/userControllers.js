@@ -155,13 +155,20 @@ export const updateProfile = async (req, res) => {
   } catch (error) {
     throw new Error("Failed to upload resources ..", error.message);
   }
-
   res.status(200).json({
     message: "Profile updated",
     loggedUser: req.authorizedUser,
   });
 };
 
+export const logOut = (_, res) => {
+  res.cookie("jwt", "", {
+    maxAge: 0,
+  });
+  res.status(200).json({
+    message: "Logged-Out sucessfully",
+  });
+};
 //---------------------------------------------------------------------------------------------------------------------------------//
 
 // export const register = async (req, res) => {

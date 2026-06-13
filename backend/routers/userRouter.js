@@ -14,6 +14,7 @@ import {
   register,
   login,
   updateProfile,
+  logOut,
 } from "../controllers/userControllers.js";
 import { authorization } from "../middlewares/authMiddleware.js";
 import { useAuthCookie } from "../middlewares/authCookieMiddleware.js";
@@ -62,5 +63,7 @@ router.put(
   uploads.single("profile_pic"),
   updateProfile,
 );
+
+router.post("/logout", logOut);
 
 export default router;

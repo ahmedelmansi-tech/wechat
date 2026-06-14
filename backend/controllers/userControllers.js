@@ -129,7 +129,7 @@ export const login = async (req, res) => {
 export const updateProfile = async (req, res) => {
   // Handling the Profile Pic In the Cloudinary Side
 
-  console.log(req.file);
+  // console.log(req.file);
   //    {
   //   fieldname: 'profile_pic',
   //   originalname: 'quote-icon.png',

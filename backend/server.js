@@ -22,9 +22,7 @@ import messageRouter from "./routers/messageRoutes.js";
 // Middlewares
 import { errorHandling } from "./middlewares/errorMiddleware.js";
 import { doYouHaveCookie } from "./middlewares/haveCookie.js";
-import { mock } from "./middlewares/mockup.js";
 
-app.use(mock);
 app.use(cookieParser());
 app.use(doYouHaveCookie);
 app.use(express.json());

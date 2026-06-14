@@ -14,8 +14,8 @@ export const useAuthCookie = async (req, res, next) => {
 
   req.authorizedUser = await User.findById(decoded.payload).select("-password");
 
-  console.log("decoded".underline, decoded);
-  console.log("authorizedUser".underline, req.authorizedUser);
+  // console.log("decoded".underline, decoded);
+  // console.log("authorizedUser".underline, req.authorizedUser);
 
   next();
 };

@@ -1,5 +1,7 @@
+import { Await } from "react-router-dom";
 import Message from "../models/MessageSchema.js";
 import User from "../models/userSchema.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const getAllCurrentUsers = async (req, res) => {
   const meId = req.authorizedUser._id;
@@ -31,15 +33,30 @@ export const getMessagesWithOtherContact = async (req, res) => {
 
 export const sendAmessage = async (req, res) => {
   const messagePayload = req.body;
+  const messageImage = req?.file;
   const from = req.authorizedUser._id;
   const to = req.params.id;
 
-  const newMessage = {
-    senderId: from,
-    receiverId: to,
-    text: messagePayload.text,
-    image: messagePayload.image,
-  };
+  let newMessage = null;
+  if (messageImage) {
+    const { secure_url } = await cloudinary.uploader.upload(messageImage.path);
+
+    if (secure_url) {
+      newMessage = {
+        senderId: from,
+        receiverId: to,
+        text: messagePayload.text,
+        image: secure_url,
+      };
+    }
+  } else {
+    newMessage = {
+      senderId: from,
+      receiverId: to,
+      text: messagePayload.text,
+      image: "",
+    };
+  }
   const message = await Message.create(newMessage);
 
   res.status(201).json({
@@ -53,34 +70,38 @@ export const chatPartners = async (req, res) => {
   const iam = await User.findById(loggedInUserId);
 
   // Detect whether iam the sender or the reciever
-  const chatingWith = await Message.find({
+  const chatPartners = await Message.find({
     $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
   });
 
-  // console.log("SMS", chatingWith);
-
   // so Wrapping in new Set will remove duplication and ... in new []
-  const myContactsId = [
+  const talkedBeforeContacts = [
     ...new Set(
-      chatingWith.map((message) => {
-        return message.senderId.toString() === loggedInUserId.toString()
-          ? message.receiverId.toString()
-          : message.senderId.toString();
+      chatPartners.map((chat) => {
+        return chat.senderId.toString() === loggedInUserId.toString()
+          ? chat.receiverId.toString()
+          : chat.senderId.toString();
       }),
     ),
   ];
 
-  console.log("My Contacts IDS is ", myContactsId);
+  // console.log("My Contacts IDS is ", talkedBeforeContacts);
   // fetch the contacts
+  const talkedBeforeToContacts = await User.find({
+    _id: { $in: [...talkedBeforeContacts] },
 
-  const talkedTo = await User.find({ _id: { $in: [...myContactsId] } }).select(
-    "-password -isDeleted -__v",
-  );
+    isDeleted: false,
+  });
+
+  // const whoIcontactedBefore = await User.find({
+  //   _id: { $ne: loggedInUserId },
+  // });
 
   res.status(200).json({
     me: iam.name,
     message: "PARTENARS",
-    myContactsId,
-    talkedTo,
+    talkedBeforeContacts,
+    talkedBeforeToContacts,
+    // whoIcontactedBefore,
   });
 };

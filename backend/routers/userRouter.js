@@ -66,4 +66,8 @@ router.put(
 
 router.post("/logout", logOut);
 
+router.get("/check", useAuthCookie, (req, res) => {
+  res.status(200).json({ message: "Access Granted", user: req.authorizedUser });
+});
+
 export default router;

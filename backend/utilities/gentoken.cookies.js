@@ -10,7 +10,7 @@ export const jwtInCookies = (payload, res) => {
     maxAge: days * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: "strict",
-    secure: process.env.ENVIROMENT === "development" ? false : true,
+    secure: process.env.MODE === "development" ? false : true,
   });
 
   return tokenInCookies;

@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
-    userName: "",
+    name: "",
     email: "",
     password: "",
     confirm_password: "",
   });
+
+  const [data, setData] = useState(null);
 
   // Functions >>>
   const handleChange = (e) => {
@@ -14,29 +19,33 @@ const SignupPage = () => {
       [e.target.name]: e.target.value,
     });
   };
-
+  const { name, email, password, confirm_password } = user;
   const sendData = async (e) => {
     e.preventDefault();
-    console.log(user);
     const controller = new AbortController();
 
-    const sendData = await fetch(
-      "/v1/api/try",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      },
-      {
-        signal: controller.signal,
-      },
-    );
-
-    if (sendData) {
-      console.log("DONE )))");
+    if (!name || !email || !password || !confirm_password) {
+      toast.error("fill all fields");
+      return;
     }
+    const sendData = await fetch("/api/v1/users/register", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+      signal: controller.signal,
+    });
+
+    console.log("WHAT YOU SEND", user);
+    const response = await sendData.json();
+
+    if (response.error) {
+      toast.error(response?.error?.message);
+      console.log("OPS ....");
+    }
+    console.log("WHAT YOU RECIEVED", response);
   };
 
   return (
@@ -53,7 +62,7 @@ const SignupPage = () => {
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-4">
             <label
-              htmlFor="username"
+              htmlFor="name"
               className="block text-sm/6 font-medium text-gray-900"
             >
               Username
@@ -61,9 +70,9 @@ const SignupPage = () => {
             <div className="mt-2">
               <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                 <input
-                  id="username"
+                  id="name"
                   type="text"
-                  name="userName"
+                  name="name"
                   placeholder="janesmith"
                   className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                   onChange={handleChange}
@@ -143,6 +152,13 @@ const SignupPage = () => {
       >
         Sign Up
       </button>
+      <br />
+      <Link
+        className="inline-block btn border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8"
+        to={"/login"}
+      >
+        have acount
+      </Link>
     </form>
   );
 };

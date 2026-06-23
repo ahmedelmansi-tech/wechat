@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-
+import { LoaderCircle } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuthUser } from "../lib/useAuthUser";
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
-    userName: "",
     email: "",
     password: "",
-    confirm_password: "",
   });
 
   // Functions >>>
@@ -16,20 +17,14 @@ const LoginPage = () => {
     });
   };
 
+  const { loggingIn, isLoggingIn } = useAuthUser();
+
   const sendData = async (e) => {
     e.preventDefault();
-    console.log(user);
+    const result = await loggingIn(user);
 
-    const sendData = await fetch("/v1/api/try", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-
-    if (sendData) {
-      console.log("DONE )))");
+    if (result.success) {
+      navigate("/");
     }
   };
 
@@ -45,7 +40,7 @@ const LoginPage = () => {
         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-4">
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="block text-sm/6 font-medium text-gray-900"
             >
               Email
@@ -88,11 +83,18 @@ const LoginPage = () => {
       </div>
 
       <button
-        className="btn border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8"
+        className="btn border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8 mx-5"
         onClick={sendData}
       >
-        Log in
+        {isLoggingIn ? <LoaderCircle className="animate-spin" /> : "Log in"}
       </button>
+
+      <Link
+        className="inline-block btn border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8"
+        to={"/signup"}
+      >
+        don't have acount
+      </Link>
     </form>
   );
 };

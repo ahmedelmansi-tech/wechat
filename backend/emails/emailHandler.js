@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import "dotenv/config";
 const wechat_link =
-  process.env.ENVIROMENT === "development"
+  process.env.MODE === "development"
     ? process.env.VITE_WECHAT_URL
     : "https://web.whatsapp.com/";
 

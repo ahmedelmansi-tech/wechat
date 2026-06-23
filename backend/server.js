@@ -41,17 +41,6 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/message", messageRouter);
 app.use(errorHandling);
 
-// TRY
-// const data = multer({ dest: "data/" });
-// app.post("/try", data.single("cv"), (req, res) => {
-//   console.log("Iam Working All good ", req.body);
-
-//   res.json({
-//     a: req.file,
-//     b: req.body,
-//   });
-// });
-
 // console.log(path.resolve("controllers"));
 
 // log("import.meta.url".bold.bgGreen, import.meta.url);
@@ -64,7 +53,7 @@ app.use(errorHandling);
 log("process.cwd()".bold.bgGreen, process.cwd());
 
 // PRODUCTION MOOOD
-if (process.env.ENVIROMENT === "production") {
+if (process.env.MODE === "production") {
   // الأول لتقديم الملفات الثابتة (JS, CSS, Images)، والثاني ليجعل جميع مسارات React تعمل حتى بعد إعادة تحميل الصفحة.
   app.use(express.static(path.join(path.resolve(), "../dist/index.html")));
 

@@ -36,7 +36,11 @@ export const register = async (req, res) => {
 
   // SCHEMA JOI
   const userSchema = Joi.object({
-    name: Joi.string().min(3).max(15).alphanum().required(),
+    name: Joi.string()
+      .min(3)
+      .max(15)
+      // .alphanum()
+      .required(),
     email: Joi.string()
       .email({
         minDomainSegments: 2,
@@ -79,8 +83,8 @@ export const register = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "<POST - METHOD > In USERS",
-      payload,
+      status: "success",
+      data: await User.findOne({ email }).select("-password"),
       token,
     });
   }
@@ -114,7 +118,7 @@ export const login = async (req, res) => {
     await jwtInCookies(logInUser._id, res);
     return res.status(200).json({
       message: `welcome ${logInUser.name}`,
-      data: logInUser,
+      data: await User.findOne({ email }).select("-password"),
       // token: await jwtInCookies(logInUser._id, res),
     });
   } else {
@@ -157,7 +161,9 @@ export const updateProfile = async (req, res) => {
   }
   res.status(200).json({
     message: "Profile updated",
-    loggedUser: req.authorizedUser,
+    loggedUser: await User.findOne({ _id: req.authorizedUser._id }).select(
+      "-password",
+    ),
   });
 };
 

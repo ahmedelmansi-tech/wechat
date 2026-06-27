@@ -160,7 +160,7 @@ export const updateProfile = async (req, res) => {
     throw new Error("Failed to upload resources ..", error.message);
   }
   res.status(200).json({
-    message: "Profile updated",
+    message: "Profile updated  successfully",
     loggedUser: await User.findOne({ _id: req.authorizedUser._id }).select(
       "-password",
     ),

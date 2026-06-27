@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthUser } from "./lib/useAuthUser";
 import { Toaster } from "react-hot-toast";
-import Nav from "./components/Nav";
+// import Nav from "./components/Nav";
 import Loading from "./components/Loading";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";

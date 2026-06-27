@@ -61,6 +61,7 @@ export const useAuthUser = create((set) => ({
       const res = await axiosInstance.post("/users/logout");
       console.log(res.data);
       set({ userAuth: null });
+      toast.success("logged out succesfuly");
       return { success: true };
     } catch (error) {
       console.log(error.response);
@@ -72,12 +73,17 @@ export const useAuthUser = create((set) => ({
   updateProfilePic: async (newPicture) => {
     set({ isUploadingProfilePic: true });
     try {
+      const newFormData = new FormData();
+      newFormData.append("profile_pic", newPicture);
       const uploadingRes = await axiosInstance.put(
         "/users/update-profile",
-        newPicture,
+        newFormData,
       );
+      if (uploadingRes.data?.message) toast.success(uploadingRes.data?.message);
+      set({ userAuth: uploadingRes.data?.loggedUser });
       console.log(uploadingRes.data);
     } catch (error) {
+      toast.error(error?.response.data.message);
       console.log(error.response);
     } finally {
       set({ isUploadingProfilePic: false });

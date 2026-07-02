@@ -15,8 +15,6 @@ export const useChat = create((set, get) => ({
   isAllContactsLoading: false,
   allContacts: [],
   getAllContacts: async () => {
-    console.log("OK Should i get all contacts ... . ");
-
     try {
       set({ isAllContactsLoading: true });
       const respons = await axiosInstance.get("/message/getAllCurrentUsers");

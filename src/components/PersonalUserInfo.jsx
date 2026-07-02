@@ -6,6 +6,8 @@ import {
   BadgeCheck,
   Camera,
   CloudDownload,
+  Loader,
+  LoaderPinwheel,
   Volume2,
   VolumeOff,
 } from "lucide-react";
@@ -38,21 +40,26 @@ const PersonalUserInfo = () => {
     updateProfilePic(file);
   };
   return (
-    <header className="flex justify-between items-center px-1.5 border">
+    <header className="flex justify-between items-center px-1.5 w-full">
       {/* avatar */}
       <div className="flex gap-1.5">
         <button
-          className="avatar avatar-online relative cursor-pointer group"
+          className="avatar avatar-online size-15 relative cursor-pointer border rounded-full flex justify-center items-center group"
           onClick={() => uploadInputFile.current.click()}
         >
-          <div className="size-13 rounded-full ">
-            <img
-              src={
-                userAuth.profile_pic ||
-                "https://img.daisyui.com/images/profile/demo/spiderperson@192.webp"
-              }
-            />
-          </div>
+          {isUploadingProfilePic ? (
+            <LoaderPinwheel size={25} className="animate-spin duration-700" />
+          ) : (
+            <div className="size-full rounded-full">
+              <img
+                src={
+                  userAuth.profile_pic ||
+                  "https://placehold.co/800x800?text=AVATAR"
+                }
+              />
+            </div>
+          )}
+
           <div className="absolute inset-0 bg-amber-50/60 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <span className="text-xs">Change</span>
           </div>
@@ -65,6 +72,7 @@ const PersonalUserInfo = () => {
             onChange={handleChangeProfilePic}
           />
         </button>
+        {/* Name and statuts */}
         <div className="leading-px">
           <span className="text-sm">{userAuth.name}</span>
           <br />
@@ -72,13 +80,24 @@ const PersonalUserInfo = () => {
         </div>
       </div>
 
-      {/* sound on/off and  */}
+      {/* sound on/off and  logout */}
       <div className="flex items-center gap-2.5  *:border *:rounded *:p-1 *:cursor-pointer">
         <CiLogin size={25} onClick={() => loggingOut()} />
         {isSoundEnabled ? (
-          <Volume2 size={25} onClick={() => updateSoundStatus()} />
+          <Volume2
+            size={25}
+            onClick={() => {
+              updateSoundStatus();
+            }}
+          />
         ) : (
-          <VolumeOff size={25} onClick={() => updateSoundStatus()} />
+          <VolumeOff
+            size={25}
+            onClick={() => {
+              shouldPlayAsound();
+              updateSoundStatus();
+            }}
+          />
         )}
       </div>
     </header>

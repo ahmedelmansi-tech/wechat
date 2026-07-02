@@ -10,11 +10,11 @@ const ChatPage = () => {
     /* <Nav /> */
   }
   return (
-    <div className="h-screen w-screen bg-amber-100 flex justify-center items-center overflow-hidden">
+    <div className="h-screen w-screen bg-amber-200 flex justify-center items-center ">
       {/* chat page */}
-      <div className=" w-[93%] border-2 bg-slate-200/50 rounded-3xl px-1 pt-5 min-h-200 flex gap-2">
-        <div className="w-[28%]">
-          <SideBar /> {/*className="border-r-2"*/}
+      <div className="w-full sm:w-[93%] h-full sm:max-h-150 sm:border-2  rounded-3xl px-1 py-5 min-h-200 flex gap-2">
+        <div className="sm:w-[28%] lg:w-[30%] w-[30%]">
+          <SideBar />
         </div>
         <ChatConversation />
       </div>

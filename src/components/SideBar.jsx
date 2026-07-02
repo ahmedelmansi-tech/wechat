@@ -7,7 +7,9 @@ const SideBar = () => {
   return (
     <div className="h-full flex flex-col">
       <Profile />
-      {activeTab === "contacts" ? <AllContacts /> : <ActiveContacts />}
+      <div className=" max-h-[75%] overflow-y-scroll">
+        {activeTab === "contacts" ? <AllContacts /> : <ActiveContacts />}
+      </div>
     </div>
   );
 };

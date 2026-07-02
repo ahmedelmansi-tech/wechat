@@ -7,9 +7,8 @@ const AllContacts = () => {
   useEffect(() => {
     getAllContacts();
   }, []);
-  // <div>{allContacts.length > 0 ? "fetching Data" : <ContactRound />}</div>
   return (
-    <div className="h-full space-y-2.5  overflow-y-scroll  p-2">
+    <div className="space-y-2.5 sm:p-2 p-0.5">
       {allContacts.map((friend) => (
         <Friend friend={friend} key={friend._id} />
       ))}

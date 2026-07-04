@@ -1,8 +1,10 @@
 import PersonalUserInfo from "./PersonalUserInfo";
 import ActiveContactsTab from "./ActiveContactsTab";
 const Profile = () => {
+  // border-b-2
+
   return (
-    <div className="border-b-2 pt-2 max-h-[25%]">
+    <div className="pt-2 border-b-2 ">
       <PersonalUserInfo />
       <ActiveContactsTab />
     </div>

@@ -27,4 +27,7 @@ export const useChat = create((set, get) => ({
       console.log("FINALLY", get().allContacts);
     }
   },
+
+  selectedContact: null,
+  setSelectedContact: (selectedContact) => ({ selectedContact }),
 }));

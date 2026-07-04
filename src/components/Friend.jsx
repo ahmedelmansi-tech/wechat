@@ -13,7 +13,9 @@ const Friend = ({ friend }) => {
         alt={friend.name}
         className="size-6 sm:size-8 lg:size-10 rounded-full"
       />
+
       {/* @todo make the name ... if it taller than expexted */}
+
       <span className="text-[10px] sm:text-xs lg:text-xl">
         {friend.name.split(" ")[0]}
       </span>

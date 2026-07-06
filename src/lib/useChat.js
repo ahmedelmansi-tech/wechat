@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { data } from "react-router-dom";
 export const useChat = create((set, get) => ({
   isSoundEnabled: localStorage.getItem("soundOn") === "true",
   updateSoundStatus: () => {
@@ -29,5 +31,21 @@ export const useChat = create((set, get) => ({
   },
 
   selectedContact: null,
-  setSelectedContact: (selectedContact) => ({ selectedContact }),
+  setSelectedContact: (selectedContact) => set({ selectedContact }),
+  messages: [],
+  isMessagesLoading: false,
+  getMessageByUserId: async (userId) => {
+    set({ isMessagesLoading: true });
+    try {
+      const res = await axiosInstance.get(
+        `/message/getMessagesWithOtherContact/${userId}`,
+      );
+      console.log("messages", res?.data?.talks);
+      set({ messages: res?.data?.talks });
+    } catch (error) {
+      toast.error(error?.response?.data.message);
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
 }));

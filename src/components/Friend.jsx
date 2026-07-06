@@ -1,9 +1,12 @@
+import { useChat } from "../lib/useChat";
 const Friend = ({ friend }) => {
+  const { setSelectedContact, getMessageByUserId } = useChat();
+
   return (
     <div
       className="bg-slate-200 flex gap-2.5 items-center w-full p-2 cursor-pointer mt-2 rounded-lg shadow-xs hover:shadow-2xl"
       title={friend.name}
-      onClick={() => console.log(friend._id)}
+      onClick={() => setSelectedContact(friend)}
     >
       <img
         src={

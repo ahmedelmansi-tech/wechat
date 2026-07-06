@@ -37,25 +37,19 @@ export const sendAmessage = async (req, res) => {
   const to = req.params.id;
 
   let newMessage = null;
+  let secure_url = null;
   if (messageImage) {
-    const { secure_url } = await cloudinary.uploader.upload(messageImage.path);
-
-    if (secure_url) {
-      newMessage = {
-        senderId: from,
-        receiverId: to,
-        text: messagePayload.text,
-        image: secure_url,
-      };
-    }
-  } else {
-    newMessage = {
-      senderId: from,
-      receiverId: to,
-      text: messagePayload.text,
-      image: "",
-    };
+    secure_url = (await cloudinary.uploader.upload(messageImage.path))
+      .secure_url;
   }
+
+  newMessage = {
+    senderId: from,
+    receiverId: to,
+    text: messagePayload.text || "",
+    image: secure_url || "",
+  };
+
   const message = await Message.create(newMessage);
 
   res.status(201).json({

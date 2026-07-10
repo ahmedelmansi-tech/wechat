@@ -48,4 +48,19 @@ export const useChat = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
+  sendMessageToUser: async (dataToSend) => {
+    const userId = get().selectedContact._id;
+    const { messages } = get();
+    try {
+      const res = await axiosInstance.post(
+        `/message/send/${userId}`,
+        dataToSend,
+      );
+      //  messages.concat(res.data?.message)
+      set({ messages: [...messages, res?.data?.message] });
+    } catch (error) {
+      console.log(error);
+      toast.error("something went wrong");
+    }
+  },
 }));

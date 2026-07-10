@@ -22,12 +22,10 @@ const UserSchema = mongoose.Schema(
     },
     profile_pic: {
       type: String,
-      require: true,
       default: "",
     },
     isDeleted: {
       type: Boolean,
-      require: true,
       default: false,
     },
   },

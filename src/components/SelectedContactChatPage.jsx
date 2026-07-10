@@ -1,9 +1,10 @@
 import NoChatHistory from "./NoChatHistory";
+// import { makeKeyboardSounds } from "../hooks/useKeyboardSound";
 import SendMessage from "./SendMessage";
 import { useChat } from "../lib/useChat";
 import { useAuthUser } from "../lib/useAuthUser";
 import { CircleX, RefreshCcw } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 function SelectedContactChatPage() {
   const {
     selectedContact,
@@ -13,6 +14,7 @@ function SelectedContactChatPage() {
     isMessagesLoading,
   } = useChat();
   const { userAuth } = useAuthUser();
+  const scrollToMe = useRef(null);
 
   // Case : handle ESCAPE KEY
   useEffect(() => {
@@ -30,6 +32,12 @@ function SelectedContactChatPage() {
     getMessageByUserId(selectedContact._id);
     console.log("MESSAGES > ", messages);
   }, [selectedContact, getMessageByUserId]);
+
+  // Scrolling to the last Message
+  useEffect(() => {
+    console.log("CALLED");
+    scrollToMe.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="flex justify-between items-center border-5 w-full flex-col">
@@ -56,11 +64,14 @@ function SelectedContactChatPage() {
         </div>
       </header>
       <main className="py-2 flex-1 w-full p-2 overflow-y-auto space-y-2.5">
+        {/* Messages are loading */}
         {isMessagesLoading && (
           <div className="w-full h-full flex justify-center items-center">
             <RefreshCcw size={50} className="animate-spin" />
           </div>
         )}
+
+        {/* Messages loaded */}
         {messages.length === 0 ? (
           <NoChatHistory />
         ) : (
@@ -82,12 +93,20 @@ function SelectedContactChatPage() {
                         className="h-25 rounded-xl object-cover mt-2"
                       />
                     )}
+                    <p className="bg-slate-500 w-fit p-1 text-xs mt-2 rounded-lg text-white">
+                      {new Date(sms.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
                   </div>
                 </div>
               );
             })}
           </>
         )}
+        {/* Scroll to immediatly */}
+        <div ref={scrollToMe} />
       </main>
       <SendMessage />
     </div>

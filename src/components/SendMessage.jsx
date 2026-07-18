@@ -1,12 +1,14 @@
 import { Send, Image, BadgeX } from "lucide-react";
 import { useChat } from "../lib/useChat";
 import { useRef, useState } from "react";
+import useKeyboardSound from "../hooks/useKeyboardSound";
 const SendMessage = () => {
-  const { sendMessageToUser } = useChat();
   const fileImageRef = useRef("");
   const [imageThum, setImageThum] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [textMessage, setTextMessage] = useState("");
+  const { sendMessageToUser, isSoundEnabled } = useChat();
+  const { makeKeyboardSounds } = useKeyboardSound();
 
   const handleImageChange = (e) => {
     const imageReader = new FileReader();
@@ -44,7 +46,10 @@ const SendMessage = () => {
         placeholder="type your message ... "
         className="flex-1 h-full border-0 outline-0 placeholder-white placeholder:text-lg placeholder:font-mono"
         value={textMessage}
-        onChange={(e) => setTextMessage(e.target.value)}
+        onChange={(e) => {
+          setTextMessage(e.target.value);
+          isSoundEnabled && makeKeyboardSounds();
+        }}
       />
       <div className="flex space-x-2 *:border *:size-10 *:rounded-sm">
         <div
@@ -56,7 +61,10 @@ const SendMessage = () => {
             accept="image/*"
             hidden
             ref={fileImageRef}
-            onChange={handleImageChange}
+            onChange={() => {
+              handleImageChange();
+              makeKeyboardSounds();
+            }}
           />
           <Image />
         </div>

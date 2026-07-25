@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userSchema";
+import User from "../models/userSchema.js";
 
 export const socketAuthMiddleWare = async (socket, next) => {
   try {
     // Extractng the Token (From Cookies)
     // jwt=abc123; theme=dark
-    const token = socket.handShake.headers.cookie
+    const token = socket.handshake.headers.cookie
       ?.split("; ")
       .find((part) => part.startsWith("jwt="))
       ?.split("=")[1];
@@ -21,7 +21,7 @@ export const socketAuthMiddleWare = async (socket, next) => {
       return next(new Error("Unauthorized - Invalid Token Provided"));
     }
 
-    const user = await User.findById(decode.userId).select("-password");
+    const user = await User.findById(decode.payload).select("-password");
     if (!user) {
       console.log("Socket Connection rejected : User not found");
       return next(new Error("User not found"));
@@ -29,9 +29,9 @@ export const socketAuthMiddleWare = async (socket, next) => {
 
     // After finding the User in the DB
     socket.user = user;
-    socket.userId = user._id;
+    socket.userId = user._id.toString();
     console.log(
-      `Socket authenticated for user: ${user.fullName} (${user._id})`,
+      `Socket authenticated for user: ${socket?.user.name} (${socket.user._id}) [${socket.userId}]`,
     );
     next();
   } catch (error) {

@@ -6,12 +6,12 @@ import { fileURLToPath } from "url";
 // import multer from "multer";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-// import cors from "cors";
+import cors from "cors";
 import { jwtInCookies } from "./utilities/gentoken.cookies.js";
 import colors from "colors";
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
-const app = express();
+import { server, app } from "./lib/socket.js";
 
 // Connect to database
 import { plugIn } from "./lib/dbConnect.js";
@@ -27,6 +27,12 @@ app.use(cookieParser());
 app.use(doYouHaveCookie);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(morgan("dev"));
 // ATTENTION FRONTEND PORT
 // app.use(
@@ -62,7 +68,7 @@ if (process.env.MODE === "production") {
   });
 }
 
-app.listen(PORT, (req, res) => {
+server.listen(PORT, (req, res) => {
   plugIn();
   log(`app is working on server side on port ${PORT}`.bgWhite);
 });

@@ -11,7 +11,6 @@ import {
   Volume2,
   VolumeOff,
 } from "lucide-react";
-
 const PersonalUserInfo = () => {
   const clickSound = useRef(
     new Audio("../public/sounds/frontend_public_sounds_keystroke1.mp3"),
@@ -25,6 +24,7 @@ const PersonalUserInfo = () => {
     checkCapility,
     updateProfilePic,
     isUploadingProfilePic,
+    onlineUsers,
   } = useAuthUser();
   const { isSoundEnabled, updateSoundStatus } = useChat();
 
@@ -39,14 +39,18 @@ const PersonalUserInfo = () => {
     if (!file) return;
     updateProfilePic(file);
   };
+
+  console.log("PERSONAL USER COMPONENT onlineUsers:  ", onlineUsers);
+
   return (
     <header className="flex justify-between items-center px-0.5 sm:px-1.5 w-full">
       {/* avatar */}
       <div className="flex gap-0.5 sm:gap-1.5">
-        <button
-          className="avatar avatar-online size-8 sm:size-15 relative cursor-pointer border rounded-full flex justify-center items-center group"
+        <button //
+          className={`avatar ${onlineUsers.includes(userAuth._id) && "avatar-online"}size-8 sm:size-15 relative cursor-pointer border rounded-full flex justify-center items-center group`}
           onClick={() => uploadInputFile.current.click()}
         >
+          {/* {console.log("IS that True", onlineUsers.includes(userAuth._id))} */}
           {isUploadingProfilePic ? (
             <LoaderPinwheel className="animate-spin duration-700 w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8" />
           ) : (
@@ -78,8 +82,10 @@ const PersonalUserInfo = () => {
             {userAuth.name}
           </span>
           <br />
-          <span className="sm:text-sm text-[10px] text-green-400 hidden sm:inline">
-            Online
+          <span
+            className={`sm:text-sm text-[10px] ${onlineUsers.includes(userAuth._id) ? "text-green-400" : "text-red-600"}  hidden sm:inline`}
+          >
+            {onlineUsers.includes(userAuth._id) ? "Online" : "Offline"}
           </span>
         </div>
       </div>

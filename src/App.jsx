@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     checkCapility();
-    console.log("USER AUTH", userAuth);
+    // console.log("USER AUTH", userAuth);
   }, [checkCapility]);
 
   // console.log("BEFORE THE LOADING", userAuth);

@@ -6,7 +6,7 @@ import { socketAuthMiddleWare } from "../middlewares/socket.auth.js";
 
 const app = express();
 const server = createServer(app);
-console.log(`hello from SOCKET :${process.env.VITE_WECHAT_URL}`.bgYellow);
+// console.log(`hello from SOCKET :${process.env.VITE_WECHAT_URL}`.bgYellow);
 // Socket Server
 const io = new Server(server, {
   cors: {
@@ -21,22 +21,27 @@ io.use((socket, next) => {
   next();
 });
 
-const onLineUsers = {};
+// Detect to who i will message if he is online
+
+const onlineUsers = new Map();
+
+export function getUserRecieverId(id) {
+  let socketId = onlineUsers.get(id);
+  return socketId;
+}
 
 io.on("connection", (socket) => {
   console.log(`User ${socket?.user.name} Connected`.bgMagenta);
   console.log(`User Id ${socket?.userId} Connected`.bgMagenta);
 
-  const socketId = socket?.userId;
-  onLineUsers[socketId] = socket.userId;
-
-  io.emit("onlineUsers", Object.keys(onLineUsers));
+  const socketId = socket?.id;
+  onlineUsers.set(socket.userId, socketId);
+  io.emit("onlineUsers", [...onlineUsers.keys()]);
 
   socket.on("disconnect", () => {
     console.log(`User ${socket?.user.name} disconnected`.bgMagenta);
-
-    delete onLineUsers[socketId];
-    io.emit("onlineUsers", Object.keys(onLineUsers));
+    onlineUsers.delete(socket.userId);
+    io.emit("onlineUsers", [...onlineUsers.keys()]);
   });
 });
 

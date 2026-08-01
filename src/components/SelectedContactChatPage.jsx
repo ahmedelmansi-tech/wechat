@@ -12,8 +12,9 @@ function SelectedContactChatPage() {
     getMessageByUserId,
     messages,
     isMessagesLoading,
+    supscripTomessages,
   } = useChat();
-  const { userAuth } = useAuthUser();
+  const { userAuth, onlineUsers } = useAuthUser();
   const scrollToMe = useRef(null);
 
   // Case : handle ESCAPE KEY
@@ -27,11 +28,12 @@ function SelectedContactChatPage() {
   }, [selectedContact]);
 
   useEffect(() => {
-    console.log("PAGE LOADED");
-    console.log("CONTACTED - ID", selectedContact._id);
+    // console.log("PAGE LOADED");
+    // console.log("CONTACTED - ID", selectedContact._id);
     getMessageByUserId(selectedContact._id);
-    console.log("MESSAGES > ", messages);
-  }, [selectedContact, getMessageByUserId]);
+    supscripTomessages();
+    // console.log("MESSAGES > ", messages);
+  }, [selectedContact, getMessageByUserId, supscripTomessages]);
 
   // Scrolling to the last Message
   useEffect(() => {
@@ -56,7 +58,11 @@ function SelectedContactChatPage() {
 
           <div className="flex flex-col">
             <p>{selectedContact.name.split(" ")[0]}</p>
-            <span className="text-green-500 sm:text-xs text-[9px]">Online</span>
+            <span
+              className={`${onlineUsers.includes(selectedContact._id) ? "text-green-400" : "text-red-600"} sm:text-xs text-[9px]`}
+            >
+              {onlineUsers.includes(selectedContact._id) ? "Online" : "Offline"}
+            </span>
           </div>
         </div>
         <div className="cursor-pointer ">

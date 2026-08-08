@@ -175,6 +175,29 @@ export const logOut = (_, res) => {
     message: "Logged-Out sucessfully",
   });
 };
+
+// Get Single onLine  Users
+
+export const onlineUsers = async (req, res) => {
+  // const users = await User.find({
+  //   _id: { $in: [...onlineUsers.keys()] }
+  // });
+
+  const onLineUsersIds = req.body;
+
+  try {
+    const result = await User.find({
+      _id: { $in: onLineUsersIds },
+    });
+
+    res.status(200).json({ data: result });
+  } catch (error) {
+    res.status(404).json({
+      message: "ERROR",
+      data: error.message,
+    });
+  }
+};
 //---------------------------------------------------------------------------------------------------------------------------------//
 
 // export const register = async (req, res) => {

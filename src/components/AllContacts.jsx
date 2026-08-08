@@ -21,7 +21,7 @@ const AllContacts = () => {
   }
 
   return (
-    <div className="space-y-2.5 sm:p-2 p-0.5">
+    <div className="mt-6 pl-1.5 h-full bg-neutral-200 py-2">
       {allContacts.map((friend) => (
         <Friend friend={friend} key={friend._id} />
       ))}

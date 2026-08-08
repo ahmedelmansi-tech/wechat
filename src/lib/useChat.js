@@ -2,7 +2,9 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { data } from "react-router-dom";
+import { useAuthUser } from "../lib/useAuthUser";
+// import { data } from "react-router-dom";
+// import { Subscript } from "lucide-react";
 export const useChat = create((set, get) => ({
   isSoundEnabled: localStorage.getItem("soundOn") === "true",
   updateSoundStatus: () => {
@@ -26,7 +28,7 @@ export const useChat = create((set, get) => ({
       console.log(error);
     } finally {
       set({ isAllContactsLoading: false });
-      console.log("FINALLY", get().allContacts);
+      // console.log("FINALLY", get().allContacts);
     }
   },
 
@@ -41,6 +43,8 @@ export const useChat = create((set, get) => ({
         `/message/getMessagesWithOtherContact/${userId}`,
       );
       console.log("messages", res?.data?.talks);
+      get().supscripTomessages();
+
       set({ messages: res?.data?.talks });
     } catch (error) {
       toast.error(error?.response?.data.message);
@@ -56,11 +60,22 @@ export const useChat = create((set, get) => ({
         `/message/send/${userId}`,
         dataToSend,
       );
+
       //  messages.concat(res.data?.message)
       set({ messages: [...messages, res?.data?.message] });
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
       toast.error("something went wrong");
     }
+  },
+  supscripTomessages: () => {
+    const socketUser = useAuthUser.getState().socket;
+    console.log("Subscribed");
+    socketUser.off("sendnewmessage");
+    socketUser.on("sendnewmessage", (newMessages) => {
+      const prevMessages = get().messages;
+      console.log("Received", newMessages);
+      set({ messages: [...prevMessages, newMessages] });
+    });
   },
 }));

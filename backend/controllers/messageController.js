@@ -1,7 +1,8 @@
 import Message from "../models/MessageSchema.js";
 import User from "../models/userSchema.js";
 import cloudinary from "../lib/cloudinary.js";
-
+import { io } from "../lib/socket.js";
+import { getUserRecieverId } from "../lib/socket.js";
 export const getAllCurrentUsers = async (req, res) => {
   const meId = req.authorizedUser._id;
   const contacts = await User.find({ _id: { $ne: meId } });
@@ -38,11 +39,13 @@ export const sendAmessage = async (req, res) => {
 
   let newMessage = null;
   let secure_url = null;
+
+  console.log("Uploading image...");
   if (messageImage) {
     secure_url = (await cloudinary.uploader.upload(messageImage.path))
       .secure_url;
   }
-
+  console.log("Uploaded successfully");
   newMessage = {
     senderId: from,
     receiverId: to,
@@ -51,6 +54,14 @@ export const sendAmessage = async (req, res) => {
   };
 
   const message = await Message.create(newMessage);
+
+  // real time messages
+  // replace the id in the database with the socket id
+  const recieverSocketId = getUserRecieverId(to);
+
+  if (recieverSocketId) {
+    io.to(recieverSocketId).emit("sendnewmessage", message);
+  }
 
   res.status(201).json({
     note: "message sent ...",

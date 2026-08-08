@@ -1,32 +1,25 @@
 import { useChat } from "../lib/useChat";
-import { MapPinCheckInside } from "lucide-react";
+import { Users, UserRoundCheck } from "lucide-react";
 const ActiveContactsTab = () => {
   const { changeActiveTab, activeTab } = useChat();
   return (
-    <div className="join grid grid-cols-2 my-4 w-full [&>button]:gap-px sm:[&>button]:gap-1">
+    <div className="mt-2 py-2 border-y-2 sm:border-b-0 flex  flex-col items-center sm:flex-row sm:justify-center sm:items-center sm:gap-2 lg:gap-5 *:border *:rounded-sm *:p-1 *:cursor-pointer  space-y-1.5 sm:space-y-0">
       <button
-        className={`join-item btn btn-outline btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl  ${activeTab === "contacts" && "bg-amber-400"}`}
+        className={` ${activeTab === "contacts" && "bg-neutral-400"}`}
         onClick={() => {
           changeActiveTab("contacts");
         }}
       >
-        {activeTab === "contacts" ? (
-          <MapPinCheckInside className="w-3 h-3 sm:w-5 sm:h-5 shrink-0" />
-        ) : (
-          ""
-        )}
-        <span>Contacts</span>
+        <Users />
       </button>
+
       <button
-        className={`join-item btn btn-outline btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl ${activeTab === "active" && "bg-amber-400"}`}
-        onClick={() => changeActiveTab("active")}
+        className={` ${activeTab === "active" && "bg-neutral-400"}`}
+        onClick={() => {
+          changeActiveTab("active");
+        }}
       >
-        {activeTab === "active" ? (
-          <MapPinCheckInside className="w-3 h-3  sm:w-5 sm:h-5 shrink-0" />
-        ) : (
-          ""
-        )}
-        <span>Active</span>
+        <UserRoundCheck />
       </button>
     </div>
   );

@@ -12,8 +12,9 @@ function SelectedContactChatPage() {
     getMessageByUserId,
     messages,
     isMessagesLoading,
+    supscripTomessages,
   } = useChat();
-  const { userAuth } = useAuthUser();
+  const { userAuth, onlineUsers } = useAuthUser();
   const scrollToMe = useRef(null);
 
   // Case : handle ESCAPE KEY
@@ -27,20 +28,21 @@ function SelectedContactChatPage() {
   }, [selectedContact]);
 
   useEffect(() => {
-    console.log("PAGE LOADED");
-    console.log("CONTACTED - ID", selectedContact._id);
+    // console.log("PAGE LOADED");
+    // console.log("CONTACTED - ID", selectedContact._id);
     getMessageByUserId(selectedContact._id);
-    console.log("MESSAGES > ", messages);
-  }, [selectedContact, getMessageByUserId]);
+    supscripTomessages();
+    // console.log("MESSAGES > ", messages);
+  }, [selectedContact, getMessageByUserId, supscripTomessages]);
 
   // Scrolling to the last Message
   useEffect(() => {
-    console.log("CALLED");
+    console.log("CALLED Scrolling to the last Message");
     scrollToMe.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
+  // border-5
   return (
-    <div className="flex justify-between items-center border-5 w-full flex-col">
+    <div className="flex flex-col justify-between items-center  flex-1  bg-amber-200">
       <header className=" w-full flex justify-between items-center px-5 py-2">
         <div className="flex gap-1.5">
           <div className="size-10 sm:size-15 lg:size-25 border rounded-full overflow-hidden">
@@ -56,7 +58,11 @@ function SelectedContactChatPage() {
 
           <div className="flex flex-col">
             <p>{selectedContact.name.split(" ")[0]}</p>
-            <span className="text-green-500 sm:text-xs text-[9px]">Online</span>
+            <span
+              className={`${onlineUsers.includes(selectedContact._id) ? "text-green-400" : "text-red-600"} sm:text-xs text-[9px]`}
+            >
+              {onlineUsers.includes(selectedContact._id) ? "Online" : "Offline"}
+            </span>
           </div>
         </div>
         <div className="cursor-pointer ">
@@ -83,7 +89,7 @@ function SelectedContactChatPage() {
                   key={sms._id}
                 >
                   <div
-                    className={`${sms.senderId === selectedContact._id && "chat-bubble-neutral"} chat-bubble`}
+                    className={`${sms.senderId === selectedContact._id && "chat-bubble-neutral"} chat-bubble p-3`}
                   >
                     {sms.text && <p>{sms.text}</p>}
                     {sms.image && (

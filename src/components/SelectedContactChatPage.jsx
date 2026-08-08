@@ -37,12 +37,12 @@ function SelectedContactChatPage() {
 
   // Scrolling to the last Message
   useEffect(() => {
-    console.log("CALLED");
+    console.log("CALLED Scrolling to the last Message");
     scrollToMe.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
+  // border-5
   return (
-    <div className="flex justify-between items-center border-5 w-full flex-col">
+    <div className="flex flex-col justify-between items-center  flex-1  bg-amber-200">
       <header className=" w-full flex justify-between items-center px-5 py-2">
         <div className="flex gap-1.5">
           <div className="size-10 sm:size-15 lg:size-25 border rounded-full overflow-hidden">
@@ -89,7 +89,7 @@ function SelectedContactChatPage() {
                   key={sms._id}
                 >
                   <div
-                    className={`${sms.senderId === selectedContact._id && "chat-bubble-neutral"} chat-bubble`}
+                    className={`${sms.senderId === selectedContact._id && "chat-bubble-neutral"} chat-bubble p-3`}
                   >
                     {sms.text && <p>{sms.text}</p>}
                     {sms.image && (

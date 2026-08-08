@@ -21,7 +21,10 @@ function App() {
 
   if (checkUserAuth) return <Loading />;
   return (
-    <div className="bg-[linear-gradient(to_bottom_right,#0f172a,#8a92a8,#3b82f6)] w-full h-screen">
+    <div
+      className="h-screen overflow-clip border border-red-400"
+      data-theme="cupcake"
+    >
       {/* <Nav /> */}
 
       <Routes>

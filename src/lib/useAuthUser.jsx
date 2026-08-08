@@ -12,6 +12,7 @@ export const useAuthUser = create((set, get) => ({
   isUploadingProfilePic: false,
   socket: null,
   onlineUsers: [],
+  activeUsers: [],
 
   checkCapility: async () => {
     try {
@@ -101,6 +102,18 @@ export const useAuthUser = create((set, get) => ({
     }
   },
 
+  updateActiveUsers: async (activeUsersOnly) => {
+    try {
+      const result = await axiosInstance.post(
+        "/users/onlineUsers",
+        activeUsersOnly,
+      );
+      set({ activeUsers: result.data.data });
+      console.log("ON IDS ".bgGreen, result.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  },
   connectWithSocket: () => {
     const { userAuth, socket } = get();
     if (!userAuth || socket?.connected) {

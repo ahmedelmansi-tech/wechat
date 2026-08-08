@@ -39,11 +39,13 @@ export const sendAmessage = async (req, res) => {
 
   let newMessage = null;
   let secure_url = null;
+
+  console.log("Uploading image...");
   if (messageImage) {
     secure_url = (await cloudinary.uploader.upload(messageImage.path))
       .secure_url;
   }
-
+  console.log("Uploaded successfully");
   newMessage = {
     senderId: from,
     receiverId: to,

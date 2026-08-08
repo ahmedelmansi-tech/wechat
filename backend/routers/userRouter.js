@@ -15,6 +15,7 @@ import {
   login,
   updateProfile,
   logOut,
+  onlineUsers,
 } from "../controllers/userControllers.js";
 import { authorization } from "../middlewares/authMiddleware.js";
 import { useAuthCookie } from "../middlewares/authCookieMiddleware.js";
@@ -69,5 +70,8 @@ router.post("/logout", logOut);
 router.get("/check", useAuthCookie, (req, res) => {
   res.status(200).json({ message: "Access Granted", user: req.authorizedUser });
 });
+
+// http://localhost:PORT/api/v1/users/onlineUsers
+router.post("/onlineUsers", useAuthCookie, onlineUsers);
 
 export default router;

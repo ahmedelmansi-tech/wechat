@@ -61,8 +61,8 @@ const SendMessage = () => {
             accept="image/*"
             hidden
             ref={fileImageRef}
-            onChange={() => {
-              handleImageChange();
+            onChange={(e) => {
+              handleImageChange(e);
               makeKeyboardSounds();
             }}
           />

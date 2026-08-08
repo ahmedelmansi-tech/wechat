@@ -34,6 +34,8 @@ io.on("connection", (socket) => {
   console.log(`User ${socket?.user.name} Connected`.bgMagenta);
   console.log(`User Id ${socket?.userId} Connected`.bgMagenta);
 
+  console.log("USER ID  QUERY", socket.handshake.query);
+
   const socketId = socket?.id;
   onlineUsers.set(socket.userId, socketId);
   io.emit("onlineUsers", [...onlineUsers.keys()]);

@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { MessagesSquare, SmilePlus } from "lucide-react";
+import { useAuthUser } from "../lib/useAuthUser";
+import Loading from "../components/Loading";
+// _________________________________________________________________________ //
+
 const SignupPage = () => {
+  const { signingUp, isSigningUp } = useAuthUser();
   const navigate = useNavigate();
   const [user, setUser] = useState({
     name: "",
@@ -11,7 +17,6 @@ const SignupPage = () => {
   });
 
   const [data, setData] = useState(null);
-
   // Functions >>>
   const handleChange = (e) => {
     setUser({
@@ -20,47 +25,68 @@ const SignupPage = () => {
     });
   };
   const { name, email, password, confirm_password } = user;
+
   const sendData = async (e) => {
     e.preventDefault();
-    const controller = new AbortController();
+    const result = await signingUp(user);
 
-    if (!name || !email || !password || !confirm_password) {
-      toast.error("fill all fields");
-      return;
+    if (result.success) {
+      navigate("/");
     }
-    const sendData = await fetch("/api/v1/users/register", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-      signal: controller.signal,
-    });
-
-    console.log("WHAT YOU SEND", user);
-    const response = await sendData.json();
-
-    if (response.error) {
-      toast.error(response?.error?.message);
-      console.log("OPS ....");
-    }
-    console.log("WHAT YOU RECIEVED", response);
   };
 
+  // USING CONTROLLER
+  // if (result) {
+  //   toast.success("Account Created succesfully");
+  // }
+  // const sendData = async (e) => {
+  //   e.preventDefault();
+  //   const controller = new AbortController();
+
+  //   if (!name || !email || !password || !confirm_password) {
+  //     toast.error("fill all fields");
+  //     return;
+  //   }
+  //   const sendData = await fetch("/api/v1/users/register", {
+  //     method: "POST",
+  //     credentials: "include",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(user),
+  //     signal: controller.signal,
+  //   });
+
+  //   console.log("WHAT YOU SEND", user);
+  //   const response = await sendData.json();
+
+  //   if (response.error) {
+  //     toast.error(response?.error?.message);
+  //     console.log("OPS ....");
+  //   }
+  //   console.log("WHAT YOU RECIEVED", response);
+  // };
+
+  if (isSigningUp) {
+    return <Loading />;
+  }
+
   return (
-    <form className="max-w-150 p-9 mx-auto ">
-      <div className="space-y-12">
-        <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-base/7 font-semibold text-gray-900">
-            First time
-          </h2>
-          <p className="mt-1 text-sm/6 text-gray-100">
-            We are Happy to join us
-          </p>
-        </div>
-        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-          <div className="sm:col-span-4">
+    <div className="min-h-screen flex flex-col justify-center items-center *:w-full *:p-5 sm:*:max-w-150 sm:*:mx-auto ">
+      {/* WELCOME SIGN className="bg-yellow-200" */}
+      <div>
+        <h2 className="text-base/7 font-semibold text-gray-900 flex gap-2">
+          <span>First time </span> <SmilePlus className="size-5" />
+        </h2>
+        <p className="mt-1 text-sm/6 p-1.5 pl-0 flex gap-3 items-center">
+          <span>We are Happy to join us</span>
+          <MessagesSquare className="size-5 animate-bounce" />
+        </p>
+      </div>
+      {/* FORM className="bg-yellow-500"*/}
+      <form onSubmit={sendData}>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6 *:sm:col-span-5">
+          <div>
             <label
               htmlFor="name"
               className="block text-sm/6 font-medium text-gray-900"
@@ -81,7 +107,7 @@ const SignupPage = () => {
             </div>
           </div>
 
-          <div className="sm:col-span-4">
+          <div>
             <label
               htmlFor="username"
               className="block text-sm/6 font-medium text-gray-900"
@@ -102,7 +128,7 @@ const SignupPage = () => {
             </div>
           </div>
 
-          <div className="sm:col-span-4">
+          <div>
             <label
               htmlFor="password"
               className="block text-sm/6 font-medium text-gray-900"
@@ -123,7 +149,7 @@ const SignupPage = () => {
             </div>
           </div>
 
-          <div className="sm:col-span-4">
+          <div>
             <label
               htmlFor="password"
               className="block text-sm/6 font-medium text-gray-900"
@@ -143,23 +169,25 @@ const SignupPage = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+          {/* BUTTONS  */}
+          <div className="flex items-center justify-center sm:justify-start gap-2.5 p-1">
+            <button
+              className="btn border-2 px-4 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white"
+              type="submit"
+            >
+              Sign Up
+            </button>
 
-      <button
-        className="w-full sm:w-87 btn  border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8"
-        onClick={sendData}
-      >
-        Sign Up
-      </button>
-      <br />
-      <Link
-        className="inline-block btn border-2 px-3 py-1 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white mt-8"
-        to={"/login"}
-      >
-        have acount
-      </Link>
-    </form>
+            <Link
+              className=" btn border-2 px-3 rounded-lg cursor-pointer hover:scale-105 duration-200 hover:bg-sky-950 hover:text-white"
+              to={"/login"}
+            >
+              have acount
+            </Link>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 

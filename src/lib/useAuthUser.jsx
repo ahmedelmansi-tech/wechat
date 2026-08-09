@@ -53,16 +53,17 @@ export const useAuthUser = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/users/register", userData);
-      set({ userAuth: res.data.payload });
-      console.log(res.data.payload);
-      toast.success(`Welcome ${res.data.payload.name}`);
+      set({ userAuth: res.data.data });
+      console.log(res.data.data);
+      get().connectWithSocket();
+      toast.success(`Welcome ${res.data.data.name}`);
       return { success: true };
     } catch (error) {
       console.log("ERR : ", error.response);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message);
       return { success: false, message: error.response?.data };
     } finally {
-      set({ isLoggingIn: false });
+      set({ isSigningUp: false });
     }
   },
 

@@ -17,7 +17,7 @@ const ChatPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setWelcome(false);
-    }, 3000);
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, []);

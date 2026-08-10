@@ -6,10 +6,10 @@ import { useChat } from "../lib/useChat";
 const SideBar = () => {
   const { activeTab } = useChat();
   return (
-    <div className="h-full flex flex-col bg-base-200 sm:p-1">
+    <div className="h-full flex flex-col  sm:p-1">
       <Profile />
       <ActiveContactsTab />
-      <div className="flex-1 overflow-y-auto border-b-2 scrollbar-thin">
+      <div className="flex-1  overflow-y-auto border-b-2 scrollbar-thin">
         {activeTab === "contacts" ? <AllContacts /> : <ActiveContacts />}
       </div>
     </div>

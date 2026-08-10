@@ -19,7 +19,7 @@ const Friend = ({ friend }) => {
             `https://placehold.co/800x800?text=${friend.name.at(0)}`
           }
           alt={friend.name}
-          className="size-7 sm:size-8 lg:size-10 rounded-full"
+          className="size-5 sm:size-8 lg:size-10 rounded-full"
         />
       </div>
 

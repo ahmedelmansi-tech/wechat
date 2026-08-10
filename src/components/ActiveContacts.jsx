@@ -1,4 +1,4 @@
-import { BluetoothOff } from "lucide-react";
+import { GlobeOff } from "lucide-react";
 import { useAuthUser } from "../lib/useAuthUser";
 import { useChat } from "../lib/useChat";
 import Friend from "./Friend";
@@ -22,7 +22,11 @@ const ActiveContacts = () => {
   console.log("activeUsers : ", activeUsers);
 
   if (activeUsers.length === 0) {
-    return <BluetoothOff />;
+    return (
+      <div className="w-full h-full flex justify-center pt-8">
+        <GlobeOff className="bg-neutral-300 rounded-full p-2" size={35} />
+      </div>
+    );
   }
 
   return (
